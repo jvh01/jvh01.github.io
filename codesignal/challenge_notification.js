@@ -1,6 +1,7 @@
 const {Connection} = require('./connection');
-const {sendNewChallengeNotification} = require('./discord_webhook.js')
-const {ellipsis} = require('./utils.js')
+const {sendNewChallengeNotification} = require('./discord_webhook.js');
+const {GetUsersRequest} = require('./users.js');
+const {ellipsis} = require('./utils.js');
 
 var log = console.log
 
@@ -11,7 +12,7 @@ Connection.general = new Connection({
 });
 
 // Challenge list monitoring
-var lastChallengeId = null;
+var seenChallengeIds = new Set();
 
 function checkLatestChallenge() {
   var data = {
@@ -23,16 +24,18 @@ function checkLatestChallenge() {
       difficulty: 'all',
       generalType: 'all',
       offset: 0,
-      limit: 2
+      limit: 1
     }]
   };
 
   Connection.general.send(data, (response) => {
-    const challenge = response.feed[1].challenge;
+    const challenge = response.feed[0].challenge;
+
+    if (!challenge.taskId) return;
 
     log(`Latest challenge: ${challenge._id}`);
 
-    if (lastChallengeId == challenge.taskId) return;
+    if (seenChallengeIds.has(challenge.taskId)) return;
 
     log(challenge);
 
@@ -40,16 +43,24 @@ function checkLatestChallenge() {
     const secondsElapsed = (Date.now() - challenge.date) / 1000;
 
     if (secondsElapsed < 60) {
-      sendNewChallengeNotification(
-        challenge.name,
-        `https://app.codesignal.com/challenge/${challenge._id}`,
-        `${challenge.reward} coins`,
-        `${challenge.generalType} / ${challenge.type}`,
-        `${challenge.duration / 1000 / 3600 / 24} days`,
-        ellipsis(challenge.task.description, 2048)
-      );
+      Connection.general.send(
+        GetUsersRequest([challenge.authorId]),
+        (response) => {
+          const authorUsername = response[0].username;
+          sendNewChallengeNotification(
+            challenge.name,
+            `https://app.codesignal.com/challenge/${challenge._id}`,
+            `${challenge.reward} coins`,
+            `${challenge.generalType} / ${challenge.type}`,
+            `${challenge.duration / 1000 / 3600 / 24} days`,
+            ellipsis(challenge.task.description, 2048),
+            authorUsername
+          );
+          seenChallengeIds.add(challenge.taskId);
+        }
+      )
     }
   });
 }
 
-Connection.general.on('connect', () => {setInterval(checkLatestChallenge, 2000)});
+Connection.general.on('connect', () => {setInterval(checkLatestChallenge, 2500)});

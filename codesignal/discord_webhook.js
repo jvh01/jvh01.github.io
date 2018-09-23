@@ -12,18 +12,23 @@ const hookurl = isProdEnv() ? CHALLENGE_NOTIFIER : DEV_HOOK;
 
 
 // https://anidiotsguide_old.gitbooks.io/discord-js-bot-guide/content/examples/using-embeds-in-messages.html
-function sendNewChallengeNotification(challengeName, challengeUrl, reward, type, duration, statement) {
+function sendNewChallengeNotification(challengeName, challengeUrl, reward, type, duration, statement, authorUsername) {
   console.log('Sending discord notification.');
   fetch(hookurl, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({embeds: [
     {
-      color: 0x71CD40,
+      color: 0xfebe1e,
       title: challengeName,
       url: challengeUrl,
       description: statement,
-      fields: [{
+      fields: [
+        {
+          name: "Author",
+          value: authorUsername,
+        },
+        {
           name: "Reward",
           value: reward,
         },

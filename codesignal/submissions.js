@@ -9,9 +9,6 @@ Connection.general = new Connection({
   passHash: process.env.CSPASS,
 });
 
-// Challenge list monitoring
-var lastChallengeId = null;
-
 function getSubmissions(challengeId, taskId, limit, offset) {
   
   var data = {
