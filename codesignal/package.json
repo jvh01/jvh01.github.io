@@ -1,0 +1,25 @@
+{
+  "name": "codesignal",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "dependencies": {
+    "node-fetch": "^2.2.0",
+    "perf_hooks": "^0.0.1",
+    "ws": "^6.0.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jvh01/jvh01.github.io.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jvh01/jvh01.github.io/issues"
+  },
+  "homepage": "https://github.com/jvh01/jvh01.github.io#readme"
+}
