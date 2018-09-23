@@ -47,4 +47,4 @@ function checkLatestChallenge() {
   });
 }
 
-Connection.general.on('connect', checkLatestChallenge);
+Connection.general.on('connect', () => {setInterval(checkLatestChallenge, 2000)});
