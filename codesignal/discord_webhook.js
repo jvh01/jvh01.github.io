@@ -17,35 +17,37 @@ function sendNewChallengeNotification(challengeName, challengeUrl, reward, type,
   fetch(hookurl, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({embeds: [
-    {
-      color: 0xfebe1e,
-      title: challengeName,
-      url: challengeUrl,
-      description: statement,
-      fields: [
-        {
-          name: "Author",
-          value: authorUsername,
+    body: JSON.stringify({
+      content: '<@&493536203447074826>',
+      embeds: [
+      {
+        color: 0xfebe1e,
+        title: challengeName,
+        url: challengeUrl,
+        description: statement,
+        fields: [
+          {
+            name: "Author",
+            value: authorUsername,
+          },
+          {
+            name: "Reward",
+            value: reward,
+          },
+          {
+            name: "Challenge Type",
+            value: type
+          },
+          {
+            name: "Duration",
+            value: duration
+          },
+        ],
+        footer: {
+          text: 'Have suggestions? Bug reports? Send them to @builder',
+          icon_url: 'https://cdn.discordapp.com/emojis/493515691941560333.png?v=1'
         },
-        {
-          name: "Reward",
-          value: reward,
-        },
-        {
-          name: "Challenge Type",
-          value: type
-        },
-        {
-          name: "Duration",
-          value: duration
-        },
-      ],
-      footer: {
-        text: 'Have suggestions? Bug reports? Send them to @builder',
-        icon_url: 'https://cdn.discordapp.com/emojis/493515691941560333.png?v=1'
-      },
-      timestamp: new Date(),
+        timestamp: new Date(),
       }
     ]})
   }).then((response) => {
@@ -53,6 +55,20 @@ function sendNewChallengeNotification(challengeName, challengeUrl, reward, type,
   });
 }
 
+function sendMessage(message) {
+  console.log('Sending discord message.');
+  fetch(hookurl, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      content: message
+    })
+  }).then((response) => {
+    console.debug(response);
+  });
+}
+
 module.exports = {
-    sendNewChallengeNotification
+    sendNewChallengeNotification,
+    sendMessage,
 };
