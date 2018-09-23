@@ -2,6 +2,7 @@ const WebSocket = require('ws')
 const {performance} = require('perf_hooks');
 
 var serverTimeOffset = Date.now();
+var log = console.log;
 
 /**
  * @fileoverview Manages the connection to the CodeFights servers.

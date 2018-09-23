@@ -1,12 +1,13 @@
 const {Connection} = require('./connection');
 const {sendNewChallengeNotification} = require('./discord_webhook.js')
+const {ellipsis} = require('./utils.js')
 
-log = console.log
+var log = console.log
 
 /** Default connection for general requests */
 Connection.general = new Connection({
-  username: process.env.CSUSER,
-  passHash: process.env.CSPASS,
+  username: 'user',  // credentials are not required for checking challenges
+  passHash: '123',
 });
 
 // Challenge list monitoring
@@ -22,12 +23,12 @@ function checkLatestChallenge() {
       difficulty: 'all',
       generalType: 'all',
       offset: 0,
-      limit: 1
+      limit: 2
     }]
   };
 
   Connection.general.send(data, (response) => {
-    const challenge = response.feed[0].challenge;
+    const challenge = response.feed[1].challenge;
 
     log(`Latest challenge: ${challenge._id}`);
 
@@ -43,8 +44,9 @@ function checkLatestChallenge() {
         challenge.name,
         `https://app.codesignal.com/challenge/${challenge._id}`,
         `${challenge.reward} coins`,
-        `${challenge.generalType} - ${challenge.type}`,
+        `${challenge.generalType} / ${challenge.type}`,
         `${challenge.duration / 1000 / 3600 / 24} days`,
+        ellipsis(challenge.task.description, 2048)
       );
     }
   });
