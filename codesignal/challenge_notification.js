@@ -28,6 +28,9 @@ function checkLatestChallenge() {
 
   Connection.general.send(data, (response) => {
     const challenge = response.feed[0].challenge;
+
+    log(`Latest challenge: ${challenge._id}`);
+
     if (lastChallengeId == challenge.taskId) return;
 
     log(challenge);
