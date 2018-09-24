@@ -46,15 +46,19 @@ function checkLatestChallenge() {
       Connection.general.send(
         GetUsersRequest([challenge.authorId]),
         (response) => {
-          const authorUsername = response[0].username;
+          const {username, avatar} = response[0];
           sendNewChallengeNotification(
             challenge.name,
             `https://app.codesignal.com/challenge/${challenge._id}`,
             `${challenge.reward} coins`,
-            `${challenge.generalType} / ${challenge.type}`,
+            challenge.generalType,
+            challenge.type,
             `${challenge.duration / 1000 / 3600 / 24} days`,
             ellipsis(challenge.task.description, 2048),
-            authorUsername
+            username,
+            avatar,
+            challenge.featured,
+            `[${challenge._id}](https://app.codesignal.com/challenge/${challenge._id})`,
           );
           seenChallengeIds.add(challenge.taskId);
         }

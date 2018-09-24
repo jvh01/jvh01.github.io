@@ -6,6 +6,15 @@ function GetUsersRequest(userIds) {
   };
 }
 
+function GetUserProfileRequest(username) {
+  return {
+    msg: 'method',
+    method: 'userService.getUserProfile',
+    params: [username]
+  };
+}
+
 module.exports = {
     GetUsersRequest,
+    GetUserProfileRequest
 };
