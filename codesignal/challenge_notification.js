@@ -47,6 +47,7 @@ function checkLatestChallenge() {
         GetUsersRequest([challenge.authorId]),
         (response) => {
           const {username, avatar} = response[0];
+          if (seenChallengeIds.has(challenge.taskId)) return;
           sendNewChallengeNotification(
             challenge.name,
             `https://app.codesignal.com/challenge/${challenge._id}`,
