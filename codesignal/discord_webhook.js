@@ -2,13 +2,7 @@ const fetch = require('node-fetch');
 const {isProdEnv} = require('./env.js');
 
 
-// Collab room
-const DEV_HOOK = 'https://discordapp.com/api/webhooks/493397697730969620/UuT90WGu-_JGNfKFTiiKgA0vhn3tz-i4WuX7kLBBvay57TvZLAmHE7txs4mIedQFdSkO';
-
-// Challenge room
-const CHALLENGE_NOTIFIER = 'https://discordapp.com/api/webhooks/392064778526261248/MKdy9TdI7AUTUZ_a7CEOr7u9HsRbDAIwSfXq85SYWt2PS9cLaWXtM8aFYBOgOVhQIqtc';
-
-const hookurl = isProdEnv() ? CHALLENGE_NOTIFIER : DEV_HOOK;
+const hookurl = isProdEnv() ? process.env.DISCORD_CHALLENGE : process.env.DISCORD_COLLAB;
 
 
 // https://anidiotsguide_old.gitbooks.io/discord-js-bot-guide/content/examples/using-embeds-in-messages.html
