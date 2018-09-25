@@ -14,8 +14,8 @@ var log = console.log
 
 /** Default connection for general requests */
 Connection.general = new Connection({
-  username: 'user',  // credentials are not required for checking challenges
-  passHash: '123',
+  username: null,  // credentials are not required for checking challenges
+  passHash: null,
 });
 
 // Challenge list monitoring
