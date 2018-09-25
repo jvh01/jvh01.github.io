@@ -44,8 +44,6 @@ function checkLatestChallenge() {
 
     if (seenChallengeIds.has(challenge.taskId)) return;
 
-    log(challenge);
-
     lastChallengeId = challenge.taskId;
     const secondsElapsed = (Date.now() - challenge.date) / 1000;
 
@@ -94,6 +92,8 @@ function checkLatestChallenge() {
                   sendTestCasesFile(challenge.name, data);
                 }
               );
+
+              log(challenge);
             }
           );
         }
