@@ -102,7 +102,7 @@ function checkLatestChallenge() {
   });
 }
 
-if (!isProdEnv()) {
+if (isProdEnv()) {
   Connection.general.on('connect', () => {setInterval(checkLatestChallenge, 3000)});
 } else {
   Connection.general.on('connect', checkLatestChallenge);
