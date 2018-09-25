@@ -2,7 +2,7 @@ const nodemon = require('nodemon');
 const fs = require('fs');
 
 nodemon({
-  script: 'challenge_notification_helper.js',
+  script: '/root/codebase/codesignal/challenge_notification_script.js',
   ext: 'js json',
   stdout: false // important: this tells nodemon not to output to console
 }).on('readable', function() { // the `readable` event indicates that data is ready to pick up
