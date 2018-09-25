@@ -1,7 +1,14 @@
 const {Connection} = require('./connection');
-const {sendNewChallengeNotification} = require('./discord_webhook.js');
-const {GetUsersRequest} = require('./users.js');
+const {
+  sendTestCasesFile,
+  sendNewChallengeNotification,
+  sendProblemStatementFile,
+} = require('./discord_webhook.js');
+const {isProdEnv} = require('./env.js');
 const {ellipsis} = require('./utils.js');
+const {GetDetailsRequest} = require('./messages/challengeService.js');
+const {GetUsersRequest} = require('./messages/userService.js');
+const {GetSampleTestsByTaskIdRequest} = require('./messages/task.js');
 
 var log = console.log
 
@@ -47,25 +54,55 @@ function checkLatestChallenge() {
         GetUsersRequest([challenge.authorId]),
         (response) => {
           const {username, avatar} = response[0];
-          if (seenChallengeIds.has(challenge.taskId)) return;
-          sendNewChallengeNotification(
-            challenge.name,
-            `https://app.codesignal.com/challenge/${challenge._id}`,
-            `${challenge.reward} coins`,
-            challenge.generalType,
-            challenge.type,
-            `${challenge.duration / 1000 / 3600 / 24} days`,
-            ellipsis(challenge.task.description, 2048),
-            username,
-            avatar,
-            challenge.featured,
-            `[${challenge._id}](https://app.codesignal.com/challenge/${challenge._id})`,
+          Connection.general.send(
+            GetDetailsRequest(challenge._id),
+            (response) => {
+              const {description, difficulty, io: {input, output}} = response.task;
+
+              if (seenChallengeIds.has(challenge.taskId)) return;
+              sendNewChallengeNotification(
+                challenge.name,
+                `https://app.codesignal.com/challenge/${challenge._id}`,
+                `${challenge.reward} coins`,
+                challenge.generalType,
+                challenge.type,
+                `${challenge.duration / 1000 / 3600 / 24} days`,
+                ellipsis(challenge.task.description, 2048),
+                username,
+                avatar,
+                challenge.featured,
+                `[${challenge._id}](https://app.codesignal.com/challenge/${challenge._id})`,
+                `${difficulty}`
+              );
+              seenChallengeIds.add(challenge.taskId);
+
+              const problem = description + '\n\n'
+              + input.map(param=> (`${param.name} {${param.type}} ${param.description}\n\n`))
+              + `output {${output.type}} ${output.description}\n`;
+              sendProblemStatementFile(challenge.name, problem);
+
+              Connection.general.send(
+                GetSampleTestsByTaskIdRequest(challenge.taskId),
+                (tests) => {
+                  data = '';
+                  tests.map(test => {
+                    if (!test.isHidden && !test.truncated) {
+                      data += `${JSON.stringify(test.input)}\n${JSON.stringify(test.output)}\n\n`;
+                    }
+                  });
+                  sendTestCasesFile(challenge.name, data);
+                }
+              );
+            }
           );
-          seenChallengeIds.add(challenge.taskId);
         }
       )
     }
   });
 }
 
-Connection.general.on('connect', () => {setInterval(checkLatestChallenge, 2500)});
+if (isProdEnv()) {
+  Connection.general.on('connect', () => {setInterval(checkLatestChallenge, 3000)});
+} else {
+  Connection.general.on('connect', checkLatestChallenge);
+}

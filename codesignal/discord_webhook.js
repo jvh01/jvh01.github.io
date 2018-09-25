@@ -1,4 +1,8 @@
+const FormData = require('form-data');
 const fetch = require('node-fetch');
+const fs = require('fs');
+const tmp = require('tmp');
+
 const {isProdEnv} = require('./env.js');
 
 
@@ -8,7 +12,7 @@ const hookurl = isProdEnv() ? process.env.DISCORD_CHALLENGE : process.env.DISCOR
 // https://anidiotsguide_old.gitbooks.io/discord-js-bot-guide/content/examples/using-embeds-in-messages.html
 function sendNewChallengeNotification(
   challengeName, challengeUrl, reward, problemType, rankingType, duration, statement,
-  authorUsername, authorAvatar, featured, challengeId
+  authorUsername, authorAvatar, featured, challengeId, difficulty
   ) {
   console.log('Sending discord notification.');
   fetch(hookurl, {
@@ -53,6 +57,11 @@ function sendNewChallengeNotification(
             inline: true,
           },
           {
+            name: "Difficulty",
+            value: difficulty,
+            inline: true,
+          },
+          {
             name: "Challenge ID",
             value: challengeId,
             inline: true,
@@ -83,7 +92,69 @@ function sendMessage(message) {
   });
 }
 
+function sendProblemStatementFile(challengeName, data) {
+  console.log('Sending file to discord');
+  tmp.file(
+    {prefix: challengeName + '-problemstatement-', postfix: '.md'},
+    function (err, path, fd, cleanupCallback) {
+      if (err) throw err;
+
+      console.log("File: ", path);
+      console.log("Filedescriptor: ", fd);
+      fs.writeFileSync(path, data);
+
+      var form  = new FormData();
+
+      form.append('payload_json', JSON.stringify({
+        content: 'Problem Statement',
+      }));
+      form.append('file', fs.createReadStream(path));
+      console.log(form);
+
+      fetch(hookurl, {
+        method: 'POST',
+        body: form
+      }).then((response) => {
+        console.debug(response);
+      });
+
+      cleanupCallback();
+  });
+}
+
+function sendTestCasesFile(challengeName, data) {
+  console.log('Sending file to discord');
+  tmp.file(
+    {prefix: challengeName + '-testcases-', postfix: '.txt'},
+    function (err, path, fd, cleanupCallback) {
+      if (err) throw err;
+
+      console.log("File: ", path);
+      console.log("Filedescriptor: ", fd);
+      fs.writeFileSync(path, data);
+
+      var form  = new FormData();
+
+      form.append('payload_json', JSON.stringify({
+        content: 'Sample Test Cases',
+      }));
+      form.append('file', fs.createReadStream(path));
+      console.log(form);
+
+      fetch(hookurl, {
+        method: 'POST',
+        body: form
+      }).then((response) => {
+        console.debug(response);
+      });
+
+    cleanupCallback();
+  });
+}
+
 module.exports = {
-    sendNewChallengeNotification,
+    sendTestCasesFile,
     sendMessage,
+    sendNewChallengeNotification,
+    sendProblemStatementFile,
 };
