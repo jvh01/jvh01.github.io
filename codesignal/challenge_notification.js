@@ -59,6 +59,7 @@ function checkLatestChallenge() {
             (response) => {
               const {description, difficulty, io: {input, output}} = response.task;
 
+              // Checking set right before sending notification to ensure atomicity
               if (seenChallengeIds.has(challenge.taskId)) return;
               sendNewChallengeNotification(
                 challenge.name,
