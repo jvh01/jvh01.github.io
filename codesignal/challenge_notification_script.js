@@ -19,7 +19,7 @@ Connection.general = new Connection({
 });
 
 // Challenge list monitoring
-var seenChallengeIds = new Set();
+var seenTaskIds = new Set();
 
 function checkLatestChallenge() {
   var data = {
@@ -42,10 +42,10 @@ function checkLatestChallenge() {
 
     log(`Latest taskId: ${challenge.taskId}`);
 
-    console.log('checking seen taskIds', seenChallengeIds);
-    if (seenChallengeIds.has(challenge.taskId)) return;
-    seenChallengeIds.add(challenge.taskId);
-    console.log('updated seenChallengeIds', seenChallengeIds);
+    console.log('checking seenTaskIds', seenTaskIds);
+    if (seenTaskIds.has(challenge.taskId)) return;
+    seenTaskIds.add(challenge.taskId);
+    console.log('updated seenTaskIds', seenTaskIds);
 
     const secondsElapsed = (Date.now() - challenge.date) / 1000;
     console.log('secondsElapsed:', secondsElapsed);
