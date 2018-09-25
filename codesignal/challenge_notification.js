@@ -1,4 +1,5 @@
-var nodemon = require('nodemon');
+const nodemon = require('nodemon');
+const fs = require('fs');
 
 nodemon({
   script: 'challenge_notification_helper.js',
