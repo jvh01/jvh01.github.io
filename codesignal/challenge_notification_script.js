@@ -40,12 +40,15 @@ function checkLatestChallenge() {
 
     if (!challenge.taskId) return;
 
-    log(`Latest challenge: ${challenge._id}`);
+    log(`Latest taskId: ${challenge.taskId}`);
 
+    console.log('checking seen taskIds', seenChallengeIds);
     if (seenChallengeIds.has(challenge.taskId)) return;
+    seenChallengeIds.add(challenge.taskId);
+    console.log('updated seenChallengeIds', seenChallengeIds);
 
-    lastChallengeId = challenge.taskId;
     const secondsElapsed = (Date.now() - challenge.date) / 1000;
+    console.log('secondsElapsed:', secondsElapsed);
 
     if (secondsElapsed < 60) {
       Connection.general.send(
@@ -57,8 +60,6 @@ function checkLatestChallenge() {
             (response) => {
               const {description, difficulty, io: {input, output}} = response.task;
 
-              // Checking set right before sending notification to ensure atomicity
-              if (seenChallengeIds.has(challenge.taskId)) return;
               sendNewChallengeNotification(
                 challenge.name,
                 `https://app.codesignal.com/challenge/${challenge._id}`,
@@ -73,7 +74,6 @@ function checkLatestChallenge() {
                 `[${challenge._id}](https://app.codesignal.com/challenge/${challenge._id})`,
                 `${difficulty}`
               );
-              seenChallengeIds.add(challenge.taskId);
 
               const problem = description + '\n\n'
               + input.map(param=> (`${param.name} {${param.type}} ${param.description}\n\n`))
@@ -102,7 +102,7 @@ function checkLatestChallenge() {
   });
 }
 
-if (isProdEnv()) {
+if (!isProdEnv()) {
   Connection.general.on('connect', () => {setInterval(checkLatestChallenge, 3000)});
 } else {
   Connection.general.on('connect', checkLatestChallenge);
