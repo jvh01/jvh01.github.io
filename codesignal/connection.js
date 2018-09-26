@@ -58,7 +58,6 @@ class Connection {
    * Connects to the server.
    */
   connect() {
-    console.log(this.url);
     if (this.status != 'closed') return;
     this.status = 'connecting';
     this.socket = new WebSocket(this.url);
@@ -209,7 +208,7 @@ class Connection {
         if (request.status == 'pending') {
           this.socket.send(JSON.stringify([ JSON.stringify(request.data) ]));
           if (request.data.name == 'unseenChallenges') {
-            console.log(Date.now() / 1000 | 0, 'Resub sent');
+            log(Date.now() / 1000 | 0, 'Resub sent');
           }
           request.status = 'sent';
           log('Sent:', request.data);
