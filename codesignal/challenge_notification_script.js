@@ -10,7 +10,7 @@ const {GetDetailsRequest} = require('./messages/challengeService.js');
 const {GetUsersRequest} = require('./messages/userService.js');
 const {GetSampleTestsByTaskIdRequest} = require('./messages/task.js');
 
-var log = (...args) => console.log('[' + new Date().toJSON() + '] ', ...args);
+var log = (...args) => console.log('[' + new Date().toJSON() + ']', ...args);
 
 /** Default connection for general requests */
 Connection.general = new Connection({
