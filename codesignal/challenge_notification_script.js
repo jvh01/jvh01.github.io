@@ -103,7 +103,7 @@ function checkLatestChallenge() {
 }
 
 if (isProdEnv()) {
-  Connection.general.on('connect', () => {setInterval(checkLatestChallenge, 3000)});
+  Connection.general.on('connect', () => {setInterval(checkLatestChallenge, 6000)});
 } else {
   Connection.general.on('connect', checkLatestChallenge);
 }
