@@ -50,7 +50,7 @@ function checkLatestChallenge() {
     const secondsElapsed = (Date.now() - challenge.date) / 1000;
     log('secondsElapsed:', secondsElapsed);
 
-    if (secondsElapsed < 60*5) {
+    if (secondsElapsed < 60*60) {
       Connection.general.send(
         GetUsersRequest([challenge.authorId]),
         (response) => {
