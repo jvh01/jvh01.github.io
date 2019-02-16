@@ -1,3 +1,4 @@
+const he = require('he');
 const {Connection} = require('./connection');
 const {
   sendTestCasesFile,
@@ -67,7 +68,7 @@ function checkLatestChallenge() {
                 challenge.generalType,
                 challenge.type,
                 `${challenge.duration / 1000 / 3600 / 24} days`,
-                ellipsis(challenge.task.description, 2048),
+                ellipsis(he.decode(challenge.task.description), 2048),
                 username,
                 avatar,
                 challenge.featured,
@@ -78,7 +79,7 @@ function checkLatestChallenge() {
               const problem = description + '\n\n'
               + input.map(param=> (`${param.name} {${param.type}} ${param.description}\n\n`))
               + `output {${output.type}} ${output.description}\n`;
-              sendProblemStatementFile(challenge.name, problem);
+              sendProblemStatementFile(challenge.name, he.decode(problem));
 
               Connection.general.send(
                 GetSampleTestsByTaskIdRequest(challenge.taskId),
@@ -103,7 +104,7 @@ function checkLatestChallenge() {
 }
 
 if (isProdEnv()) {
-  Connection.general.on('connect', () => {setInterval(checkLatestChallenge, 6000)});
+  Connection.general.on('connect', () => {setInterval(checkLatestChallenge, 5000)});
 } else {
   Connection.general.on('connect', checkLatestChallenge);
 }
