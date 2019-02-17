@@ -95,7 +95,7 @@ function sendMessage(message) {
 function sendProblemStatementFile(challengeName, data) {
   console.log('Sending file to discord');
   tmp.file(
-    {prefix: challengeName + '-problemstatement-', postfix: '.md'},
+    {prefix: challengeName + '-problemstatement-', postfix: '.html'},
     function (err, path, fd, cleanupCallback) {
       if (err) throw err;
 

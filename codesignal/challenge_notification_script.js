@@ -1,4 +1,7 @@
 const he = require('he');
+const showdown  = require('showdown');
+const htmlConverter = new showdown.Converter();
+
 const {Connection} = require('./connection');
 const {
   sendTestCasesFile,
@@ -61,6 +64,22 @@ function checkLatestChallenge() {
             (response) => {
               const {description, difficulty, io: {input, output}} = response.task;
 
+              let problem = description + '\n\n'
+              + input.map(param=> (`${param.name} {${param.type}}: ${param.description}\n\n`))
+              + `output {${output.type}}: ${output.description}\n`;
+
+              problem = he.decode(problem.replace('<code>', '`').replace('</code>', '`'));
+              let problemHtml = htmlConverter.makeHtml(
+                '<html><head><meta charset="UTF-8"></head><body>'
+                + problem
+                + '</body></html>'
+                , {
+                // completeHTMLDocument: true,
+                tables: true,
+              })
+
+              console.log(problem);
+
               sendNewChallengeNotification(
                 challenge.name,
                 `https://app.codesignal.com/challenge/${challenge._id}`,
@@ -68,7 +87,7 @@ function checkLatestChallenge() {
                 challenge.generalType,
                 challenge.type,
                 `${challenge.duration / 1000 / 3600 / 24} days`,
-                ellipsis(he.decode(challenge.task.description), 2048),
+                ellipsis(problem, 2048),
                 username,
                 avatar,
                 challenge.featured,
@@ -76,10 +95,7 @@ function checkLatestChallenge() {
                 `${difficulty}`
               );
 
-              const problem = description + '\n\n'
-              + input.map(param=> (`${param.name} {${param.type}} ${param.description}\n\n`))
-              + `output {${output.type}} ${output.description}\n`;
-              sendProblemStatementFile(challenge.name, he.decode(problem));
+              sendProblemStatementFile(challenge.name, problemHtml);
 
               Connection.general.send(
                 GetSampleTestsByTaskIdRequest(challenge.taskId),
