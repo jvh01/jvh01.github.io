@@ -54,7 +54,7 @@ function checkLatestChallenge() {
     const secondsElapsed = (Date.now() - challenge.date) / 1000;
     log('secondsElapsed:', secondsElapsed);
 
-    if (secondsElapsed < 60*60) {
+    if (secondsElapsed < 60*30) {
       Connection.general.send(
         GetUsersRequest([challenge.authorId]),
         (response) => {
@@ -68,7 +68,7 @@ function checkLatestChallenge() {
               + input.map(param=> (`${param.name} {${param.type}}: ${param.description}\n\n`))
               + `output {${output.type}}: ${output.description}\n`;
 
-              problem = he.decode(problem.replace('<code>', '`').replace('</code>', '`'));
+              problem = he.decode(problem.replace(/<\/?code>/g, '`'));
               let problemHtml = htmlConverter.makeHtml(
                 '<html><head><meta charset="UTF-8"></head><body>'
                 + problem
