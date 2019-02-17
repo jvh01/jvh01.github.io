@@ -64,7 +64,7 @@ function checkLatestChallenge() {
             (response) => {
               const {description, difficulty, io: {input, output}} = response.task;
 
-              let problem = description + '\n\n'
+              let problem = description + '\n'
               + input.map(param=> (`${param.name} {${param.type}}: ${param.description}\n\n`))
               + `output {${output.type}}: ${output.description}\n`;
 
