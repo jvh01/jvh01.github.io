@@ -95,7 +95,9 @@ function checkLatestChallenge() {
                 `${difficulty}`
               );
 
-              sendProblemStatementFile(challenge.name, problemHtml);
+              setTimeout(function() {
+                sendProblemStatementFile(challenge.name, problemHtml);
+              }, 500);
 
               Connection.general.send(
                 GetSampleTestsByTaskIdRequest(challenge.taskId),
@@ -106,7 +108,9 @@ function checkLatestChallenge() {
                       data += `${JSON.stringify(test.input)}\n${JSON.stringify(test.output)}\n\n`;
                     }
                   });
-                  sendTestCasesFile(challenge.name, data);
+                  setTimeout(function() {
+                    sendTestCasesFile(challenge.name, data);
+                  }, 1000);
                 }
               );
 
