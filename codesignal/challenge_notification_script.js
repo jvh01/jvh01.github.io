@@ -69,14 +69,8 @@ function checkLatestChallenge() {
               + `output {${output.type}}: ${output.description}\n`;
 
               problem = he.decode(problem.replace(/<\/?code>/g, '`'));
-              let problemHtml = htmlConverter.makeHtml(
-                '<html><head><meta charset="UTF-8"></head><body>'
-                + problem
-                + '</body></html>'
-                , {
-                // completeHTMLDocument: true,
-                tables: true,
-              })
+              let problemHtml = '<html><head><meta charset="UTF-8"></head><body>'
+                + htmlConverter.makeHtml(problem, { tables: true }) + '</body></html>';
 
               console.log(problem);
 
