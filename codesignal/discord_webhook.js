@@ -12,17 +12,17 @@ const hookurl = isProdEnv() ? process.env.DISCORD_CHALLENGE : process.env.DISCOR
 // https://anidiotsguide_old.gitbooks.io/discord-js-bot-guide/content/examples/using-embeds-in-messages.html
 function sendNewChallengeNotification(
   challengeName, challengeUrl, reward, problemType, rankingType, duration, statement,
-  authorUsername, authorAvatar, featured, challengeId, difficulty
+  authorUsername, authorAvatar, visibility, challengeId, difficulty, discord_tag
   ) {
   console.log('Sending discord notification.');
   fetch(hookurl, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      content: '<@&493536203447074826>',
+      content: discord_tag,
       embeds: [
       {
-        color: 0xfebe1e,
+        color: visibility === 'community' ? 0xabfe1e : 0xfebe1e,
         title: challengeName,
         url: challengeUrl,
         description: statement,
@@ -33,32 +33,32 @@ function sendNewChallengeNotification(
         fields: [
           {
             name: "Reward",
-            value: reward,
+            value: reward || '-',
             inline: true,
           },
           {
             name: "Duration",
-            value: duration,
+            value: duration || '-',
             inline: true,
           },
           {
-            name: "Featured",
-            value: featured,
+            name: "Visibility",
+            value: visibility || '-',
             inline: true,
           },
           {
             name: "Problem Type",
-            value: problemType,
+            value: problemType || '-',
             inline: true,
           },
           {
             name: "Ranking Type",
-            value: rankingType,
+            value: rankingType || '-',
             inline: true,
           },
           {
             name: "Difficulty",
-            value: difficulty,
+            value: difficulty || '-',
             inline: true,
           },
           {

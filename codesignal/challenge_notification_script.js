@@ -24,18 +24,22 @@ Connection.general = new Connection({
 
 // Challenge list monitoring
 var seenTaskIds = new Set();
+const COMMON_CONFIG = {
+  type: 'challenges',
+  tab: 'all',
+  difficulty: 'all',
+  generalType: 'all',
+  offset: 0,
+  limit: 1
+}
 
-function checkLatestChallenge() {
+function checkLatestChallenge(config = {}, discord_tag='<tag placeholder>') {
   var data = {
     msg: 'method',
     method: 'getUserFeed',
     params: [{
-      type: 'challenges',
-      tab: 'all',
-      difficulty: 'all',
-      generalType: 'all',
-      offset: 0,
-      limit: 1
+      ...COMMON_CONFIG,
+      ...config,
     }]
   };
 
@@ -65,8 +69,8 @@ function checkLatestChallenge() {
               const {description, difficulty, io: {input, output}} = response.task;
 
               let problem = description + '\n'
-              + input.map(param=> (`${param.name} {${param.type}}: ${param.description}\n\n`))
-              + `output {${output.type}}: ${output.description}\n`;
+              + input.map(param => `\`${param.name}\` {${param.type}}: ${param.description}`).join`\n`
+              + `\n\noutput {${output.type}}: ${output.description}\n`;
 
               problem = he.decode(problem.replace(/<\/?code>/g, '`'));
               let problemHtml = '<html><head><meta charset="UTF-8"></head><body>'
@@ -77,16 +81,17 @@ function checkLatestChallenge() {
               sendNewChallengeNotification(
                 challenge.name,
                 `https://app.codesignal.com/challenge/${challenge._id}`,
-                `${challenge.reward} coins`,
+                challenge.reward && `${challenge.reward} coins`,
                 challenge.generalType,
                 challenge.type,
                 `${challenge.duration / 1000 / 3600 / 24} days`,
                 ellipsis(problem, 2048),
                 username,
                 avatar,
-                challenge.featured,
+                challenge.visibility,
                 `[${challenge._id}](https://app.codesignal.com/challenge/${challenge._id})`,
-                `${difficulty}`
+                difficulty ? `${difficulty}` : null,
+                discord_tag,
               );
 
               setTimeout(function() {
@@ -118,7 +123,11 @@ function checkLatestChallenge() {
 }
 
 if (isProdEnv()) {
-  Connection.general.on('connect', () => {setInterval(checkLatestChallenge, 5000)});
+  Connection.general.on('connect', () => {
+    setInterval(function () { checkLatestChallenge({}, '<@&493536203447074826>'); }, 5000);
+    setInterval(function () { checkLatestChallenge({ tab: 'community' }, '<@&547589061909413926>'); }, 9000);
+  });
 } else {
-  Connection.general.on('connect', checkLatestChallenge);
+  Connection.general.on('connect', function () { checkLatestChallenge({}, '<official_challenge_tag>'); });
+  Connection.general.on('connect', function () { checkLatestChallenge({ tab: 'community' }, '<community_challenge_tag>'); });
 }
