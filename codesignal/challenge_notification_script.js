@@ -60,8 +60,6 @@ function checkLatestChallenge(config = {}, discord_tag='<tag placeholder>') {
 
     log('checking seenTaskIds', seenTaskIds);
     if (seenTaskIds.has(challenge.taskId)) return;
-    seenTaskIds.add(challenge.taskId);
-    log('updated seenTaskIds', seenTaskIds);
 
     const secondsElapsed = (Date.now() - challenge.date) / 1000;
     log('secondsElapsed:', secondsElapsed);
@@ -101,6 +99,8 @@ function checkLatestChallenge(config = {}, discord_tag='<tag placeholder>') {
                 difficulty ? `${difficulty}` : null,
                 discord_tag,
               );
+              seenTaskIds.add(challenge.taskId);
+              log('updated seenTaskIds', seenTaskIds);
 
               setTimeout(function() {
                 sendProblemStatementFile(challenge.name, problemHtml);
