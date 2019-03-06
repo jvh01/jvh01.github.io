@@ -44,7 +44,13 @@ function checkLatestChallenge(config = {}, discord_tag='<tag placeholder>') {
   };
 
   Connection.general.send(data, (response) => {
-    const challenge = response.feed[0].challenge;
+    try {
+      const challenge = response.feed[0].challenge;
+    } catch (err) {
+      log(response);
+      log(err);
+      return;
+    }
 
     if (!challenge.taskId) return;
 
