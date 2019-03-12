@@ -84,6 +84,7 @@ function checkLatestChallenge(config = {}, discord_tag='<tag placeholder>') {
 
               console.log(problem);
 
+              if (seenTaskIds.has(challenge.taskId)) return;
               sendNewChallengeNotification(
                 challenge.name,
                 `https://app.codesignal.com/challenge/${challenge._id}`,
