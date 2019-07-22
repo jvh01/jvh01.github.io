@@ -64,7 +64,7 @@ function checkLatestChallenge(config = {}, discord_tag='<tag placeholder>') {
     const secondsElapsed = (Date.now() - challenge.date) / 1000;
     log('secondsElapsed:', secondsElapsed);
 
-    if (secondsElapsed < 60*30) {
+    if (secondsElapsed < 60*12) {
       Connection.general.send(
         GetUsersRequest([challenge.authorId]),
         (response) => {
